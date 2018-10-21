@@ -1,11 +1,12 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<unistd.h>
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <netdb.h>
+#include <stdbool.h>
 
 #define BACKLOG 5
 #define MSG_SIZE 256
@@ -46,7 +47,7 @@ int main(int argc, char* argv[])
     }
 
     listen(sockfd,BACKLOG);
-    client_length = sizeof(sockaddr);
+    client_length = sizeof(client_addr);
     new_fd = accept(sockfd, (struct sockaddr *) &client_addr, &client_length);
 
     if (new_fd < 0) {
@@ -61,7 +62,7 @@ int main(int argc, char* argv[])
         }
         printf("Client : %s", buffer);
         memset(buffer,0,MSG_SIZE);
-        fgets(buffer,MSG_SIZE,stdin);
+        fgets(buffer,MSG_SIZE-1,stdin);
         if( write(new_fd,buffer,strlen(buffer)) < 0) {
             error("ERROR writing to the socket");
         }
