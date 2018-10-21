@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
     socklen_t client_length;
     char buffer[MSG_SIZE];
     struct sockaddr_in serv_addr,client_addr;
+    pid_t childpid;
 
     if( argc < 2 ) {
         fprintf(stderr, " usage %s portno\n", argv[0]);
@@ -48,24 +49,34 @@ int main(int argc, char* argv[])
 
     listen(sockfd,BACKLOG);
     client_length = sizeof(client_addr);
-    new_fd = accept(sockfd, (struct sockaddr *) &client_addr, &client_length);
-
-    if (new_fd < 0) {
-        error("ERROR on accept");
-    }
 
     while (true) {
 
-        memset(buffer, 0 , MSG_SIZE);
-        if( read(new_fd, buffer , MSG_SIZE) < 0) {
-            error("ERROR reading from the socket");
+        new_fd = accept(sockfd, (struct sockaddr *) &client_addr, &client_length);
+
+        if (new_fd < 0) {
+            error("ERROR on accept");
         }
-        printf("Client : %s", buffer);
-        memset(buffer,0,MSG_SIZE);
-        fgets(buffer,MSG_SIZE-1,stdin);
-        if( write(new_fd,buffer,strlen(buffer)) < 0) {
-            error("ERROR writing to the socket");
+
+        if((childpid = fork()) == 0) {
+
+            close(sockfd);
+
+            while (true) {
+                memset(buffer, 0 , MSG_SIZE);
+                if( read(new_fd, buffer , MSG_SIZE) < 0) {
+                    error("ERROR reading from the socket");
+                }
+                printf("Client : %s", buffer);
+                memset(buffer,0,MSG_SIZE);
+                fgets(buffer,MSG_SIZE-1,stdin);
+                if( write(new_fd,buffer,strlen(buffer)) < 0) {
+                    error("ERROR writing to the socket");
+                }
+            }
+
         }
+
 
     }
 
