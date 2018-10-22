@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
     pid_t childpid;
 
     if( argc < 2 ) {
-        fprintf(stderr, " usage %s portnosizeof(char)\n", argv[0]);
+        fprintf(stderr, " usage %s portno\n", argv[0]);
         exit(0);
     }
 
@@ -114,8 +114,7 @@ int main(int argc, char* argv[])
 
         /*fork() system call to handle multiple clients*/
         if((childpid = fork()) == 0) {
-
-            printf("%d",childpid);
+            
             close(sockfd);
 
             while (true) {
