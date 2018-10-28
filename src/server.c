@@ -15,7 +15,7 @@ void error(const char* error_msg)
     exit(1);
 }
 
-/* Instruction parser returns result if valid Instruction else returns -404.666*/
+/* Instruction parser returns result if valid Instruction else returns -404*/
 float decrypt(char message[])
 {
     int i=0,op_1,op_2;
@@ -31,6 +31,10 @@ float decrypt(char message[])
         }
         else if(i>=3&&i<6)
         {
+            if (message[i] == ' ') {
+                i = 6;
+                continue;
+            }
             opnd_1[i-3]=message[i];
         }
         else
@@ -114,7 +118,7 @@ int main(int argc, char* argv[])
 
         /*fork() system call to handle multiple clients*/
         if((childpid = fork()) == 0) {
-            
+
             close(sockfd);
 
             while (true) {
